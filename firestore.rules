@@ -5,14 +5,9 @@ service cloud.firestore {
     // The UID of the designated administrator.
     let ADMIN_UID = '9Vl6oTot93b9TH442xYCDLbMLs32';
 
-    // Checks if a user is authenticated.
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
     // Checks if the authenticated user is the designated administrator.
     function isAdmin() {
-      return isSignedIn() && request.auth.uid == ADMIN_UID;
+      return request.auth != null && request.auth.uid == ADMIN_UID;
     }
 
     // --- Rules for Training Modules ---
@@ -23,23 +18,17 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // --- Rules for Applicants (Specific Path) ---
-    // This rule applies ONLY to the direct path to an applicant document.
+    // --- Rules for Applicants ---
+    // This rule structure handles both direct access and collection group queries.
     match /trainingModules/{trainingModuleId}/applicants/{applicantId} {
-      // Allows any authenticated user to create an application (submit the form).
-      allow create: if isSignedIn();
+      // Any authenticated user can create an application.
+      allow create: if request.auth != null;
 
-      // Explicitly deny read, update, or delete on this specific path for clients.
-      // This forces reads to be handled by the more general collection group rule below.
-      allow read, update, delete: if false;
-    }
-
-    // --- Rules for Applicants (Collection Group) ---
-    // This rule is essential for the admin dashboard. It allows a 'list' query
-    // across all 'applicants' subcollections.
-    match /{path=**}/applicants/{applicantId} {
-      // Allows the admin to read (get, list) any applicant document.
+      // The administrator can read applicant documents (needed for the dashboard's collection group query).
       allow read: if isAdmin();
+      
+      // Explicitly deny updates and deletes from clients to prevent modification.
+      allow update, delete: if false;
     }
   }
 }
