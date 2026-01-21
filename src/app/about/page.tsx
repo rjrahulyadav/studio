@@ -1,4 +1,4 @@
-import Image from 'next/image';
+
 import { Target, Eye, Heart, Award } from 'lucide-react';
 import AnimatedSection from '@/components/animated-section';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -69,7 +69,7 @@ export default function AboutPage() {
           <div className="flex flex-col md:flex-row items-center gap-12">
             <AnimatedSection className="flex-shrink-0">
               {directorImage && (
-                 <Image
+                 <img
                   src={directorImage.imageUrl}
                   alt={directorImage.description}
                   data-ai-hint={directorImage.imageHint}
