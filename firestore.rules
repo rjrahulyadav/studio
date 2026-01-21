@@ -1,7 +1,7 @@
 /**
  * @fileoverview Firestore Security Rules for the Training Application
  * @author an AI Security Architect
- * @version 1.1
+ * @version 1.2
  *
  * @description
  * This ruleset is designed for a training application where modules are publicly
@@ -34,6 +34,9 @@
  * 3. Open Creation for Applicants: Any authenticated user can submit an application
  *    (`create` an applicant document). This allows for a simple application
  *    process without requiring a pre-existing user profile document.
+ * 4. Collection Group Queries: A separate rule on `/{path=**}/applicants/{applicantId}`
+ *    is used to allow admins to perform collection group queries across all `applicants`
+ *    subcollections. This is essential for the admin dashboard functionality.
  *
  * Denormalization for Authorization:
  * The `Applicant` document contains a `trainingModuleId` field, which duplicates
@@ -86,21 +89,35 @@ service cloud.firestore {
     match /trainingModules/{trainingModuleId} {
       allow get, list: if true;
       allow create, update, delete: if isAdmin();
+
+      /**
+       * @description
+       *   Manages create access for Applicant documents within a training module.
+       *   Any signed-in user can submit an application. Applications are immutable
+       *   and cannot be changed or deleted by clients. Read access is handled
+       *   by the collection group rule below.
+       * @path
+       *   /trainingModules/{trainingModuleId}/applicants/{applicantId}
+       */
+      match /applicants/{applicantId} {
+        allow create: if isSignedIn() && incomingDataHasValidTrainingModuleId(trainingModuleId);
+        // Read (get, list) and other write (update, delete) operations are implicitly denied
+        // at this path, but can be granted by other rules (like the collection group rule below).
+      }
     }
 
     /**
      * @description
-     *   Manages access to Applicant documents within a training module.
-     *   Any signed-in user can submit an application (create), but only admins
-     *   can view them. Applications are immutable and cannot be changed or
-     *   deleted by clients after submission.
+     *   Allows administrators to read any document in any 'applicants' collection
+     *   group. This is necessary for the admin dashboard to fetch all applicants
+     *   across all training modules.
      * @path
-     *   /trainingModules/{trainingModuleId}/applicants/{applicantId}
+     *   /{path=**}/applicants/{applicantId}
      */
-    match /trainingModules/{trainingModuleId}/applicants/{applicantId} {
-      allow get, list: if isAdmin();
-      allow create: if isSignedIn() && incomingDataHasValidTrainingModuleId(trainingModuleId);
-      allow update, delete: if false;
+    match /{path=**}/applicants/{applicantId} {
+       allow get, list: if isAdmin();
+       // This rule only grants read access. Writes must be defined on more specific paths
+       // to prevent any authenticated admin from creating an applicant document anywhere.
     }
   }
 }
