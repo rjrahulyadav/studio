@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useFirestore, useUser, useMemoFirebase } from '@/firebase';
 import { useCollection } from '@/firebase/firestore/use-collection';
@@ -23,11 +23,33 @@ export default function AdminDashboard() {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
   const firestore = useFirestore();
+  const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    if (isUserLoading) {
+      return;
+    }
+    if (!user) {
+      router.push('/admin/login');
+      return;
+    }
+
+    user.getIdTokenResult().then((idTokenResult) => {
+        if (idTokenResult.claims.admin) {
+          setIsAllowed(true);
+        } else {
+          setIsAllowed(false);
+        }
+      })
+      .catch(() => {
+        setIsAllowed(false);
+      });
+  }, [user, isUserLoading, router]);
 
   const applicantsQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
+    if (!firestore || isAllowed !== true) return null;
     return collectionGroup(firestore, 'applicants');
-  }, [firestore]);
+  }, [firestore, isAllowed]);
 
   const { data: applicants, isLoading, error } = useCollection<Applicant>(applicantsQuery);
 
@@ -38,13 +60,26 @@ export default function AdminDashboard() {
     });
   };
 
-  if (isUserLoading) {
+  if (isUserLoading || isAllowed === null) {
     return <div className="flex h-screen items-center justify-center">Loading...</div>;
   }
-
-  if (!user) {
-    router.push('/admin/login');
-    return null;
+  
+  if (isAllowed === false) {
+    return (
+        <div className="container mx-auto py-10 px-4">
+            <AnimatedSection>
+                <Card>
+                    <CardHeader className="flex flex-row items-center justify-between">
+                        <CardTitle>Access Denied</CardTitle>
+                        <Button onClick={handleSignOut} variant="outline">Sign Out</Button>
+                    </CardHeader>
+                    <CardContent>
+                        <p>You do not have permission to view this page. Please contact the administrator if you believe this is an error.</p>
+                    </CardContent>
+                </Card>
+            </AnimatedSection>
+        </div>
+    )
   }
 
   return (
@@ -57,7 +92,7 @@ export default function AdminDashboard() {
           </CardHeader>
           <CardContent>
             {isLoading && <p>Loading applications...</p>}
-            {error && <p className="text-destructive">Error loading applications: You may not have permission to view this data.</p>}
+            {error && <p className="text-destructive">An unexpected error occurred while loading applications.</p>}
             {!isLoading && !error && (
               <Table>
                 <TableHeader>
