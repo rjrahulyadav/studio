@@ -84,34 +84,17 @@ export default function Home() {
           </AnimatedSection>
           <AnimatedSection className="delay-100">
             <h1 className="font-headline text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter text-foreground">
-              {'DHANIHYA'.split('').map((char, index) => (
-                <span
-                  key={index}
-                  className="inline-block animate-text-reveal-up"
-                  style={{ animationDelay: `${index * 0.05}s` }}
-                >
-                  {char}
-                </span>
-              ))}
+              DHANIHYA
             </h1>
           </AnimatedSection>
           <AnimatedSection className="delay-200">
             <h1 className="font-headline text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter text-gradient">
-              {'SOLUTIONS'.split('').map((char, index) => (
-                <span
-                  key={index}
-                  className="inline-block animate-text-reveal-up"
-                  style={{ animationDelay: `${0.4 + index * 0.05}s` }}
-                >
-                  {char}
-                </span>
-              ))}
+              SOLUTIONS
             </h1>
           </AnimatedSection>
           <AnimatedSection className="delay-300">
             <p
-              className="mt-6 max-w-3xl mx-auto text-lg text-muted-foreground animate-text-reveal-up"
-              style={{ animationDelay: '0.8s' }}
+              className="mt-6 max-w-3xl mx-auto text-lg text-muted-foreground"
             >
               We engineer cutting-edge digital experiences using AI, IoT, and Next-Gen Web Technologies. Your vision, our innovation.
             </p>

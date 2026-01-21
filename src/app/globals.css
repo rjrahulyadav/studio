@@ -2,17 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@keyframes text-reveal-up {
-  from {
-    opacity: 0;
-    transform: translateY(100%);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 @layer base {
   :root {
     --background: 222.2 84% 4.9%;
@@ -134,10 +123,5 @@
     color: transparent;
     -webkit-text-fill-color: transparent;
     filter: drop-shadow(0 0 8px hsl(var(--accent) / 0.6));
-  }
-
-  .animate-text-reveal-up {
-    animation: text-reveal-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-    opacity: 0;
   }
 }
