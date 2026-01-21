@@ -56,10 +56,14 @@ export default function Chatbot() {
       const response = await supportChatbot({ query: input });
       const botMessage: Message = { role: "bot", content: response.answer };
       setMessages((prev) => [...prev, botMessage]);
-    } catch (error) {
+    } catch (error: any) {
+      let content = "Sorry, I encountered an error. Please try again.";
+      if (error.message && /api key/i.test(error.message)) {
+          content = "It seems the Gemini API key is missing or invalid. Please add your `GEMINI_API_KEY` to the .env file to enable the chatbot.";
+      }
       const errorMessage: Message = {
         role: "bot",
-        content: "Sorry, I encountered an error. Please try again.",
+        content,
       };
       setMessages((prev) => [...prev, errorMessage]);
       console.error("Chatbot error:", error);
