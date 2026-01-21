@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useRouter } from 'next/navigation';
 import { useAuth, useUser } from '@/firebase';
-import { initiateEmailSignIn } from '@/firebase/non-blocking-login';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -44,24 +44,25 @@ export default function AdminLoginPage() {
     );
   }
   
-  // If user is already defined (but not loading), the useEffect will handle the redirect.
-  // We can return null here to prevent rendering the login form for a logged-in user 
-  // before the redirect happens.
   if (user) {
     return null;
   }
 
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     if(!auth) return;
     setIsSubmitting(true);
-    initiateEmailSignIn(auth, values.email, values.password, (error) => {
+    try {
+        await signInWithEmailAndPassword(auth, values.email, values.password);
+        // On successful login, the useEffect hook will redirect to the dashboard.
+    } catch (error: any) {
         toast({
             variant: "destructive",
             title: "Login Failed",
             description: error.message || "Invalid email or password.",
         });
+    } finally {
         setIsSubmitting(false);
-    });
+    }
   };
 
   return (
