@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useRef, useEffect, type FormEvent } from "react";
-import { MessageCircle, Send, X, Bot, User } from "lucide-react";
+import Image from "next/image";
+import { MessageCircle, Send, ChevronLeft, Bot, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardHeader,
-  CardTitle,
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { supportChatbot } from "@/ai/flows/support-chatbot";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 type Message = {
   role: "user" | "bot";
@@ -31,6 +32,8 @@ export default function Chatbot() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  const directorImage = PlaceHolderImages.find(img => img.id === 'director-profile');
 
   const toggleChat = () => setIsOpen(!isOpen);
 
@@ -87,20 +90,24 @@ export default function Chatbot() {
       </div>
 
       <div className={cn("fixed bottom-6 right-6 z-50 w-full max-w-sm transition-all duration-300", isOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none")}>
-        <Card className="flex flex-col h-[70vh] max-h-[700px] bg-card/80 backdrop-blur-xl border-border/60 shadow-2xl">
-          <CardHeader className="flex flex-row items-center justify-between border-b border-border/60">
-             <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-                    <Bot className="w-6 h-6 text-primary" />
-                </div>
-                <div>
-                    <CardTitle className="font-headline text-primary text-lg">Support Chat</CardTitle>
-                    <p className="text-xs text-muted-foreground">AI Assistant</p>
-                </div>
-            </div>
-            <Button variant="ghost" size="icon" onClick={toggleChat} aria-label="Close chat">
-              <X className="h-5 w-5" />
+        <Card className="flex flex-col h-[70vh] max-h-[700px] bg-card/80 backdrop-blur-xl border-border/60 shadow-2xl overflow-hidden">
+          <CardHeader className="flex flex-row items-center gap-3 bg-destructive text-destructive-foreground p-3">
+            <Button variant="ghost" size="icon" onClick={toggleChat} aria-label="Close chat" className="-ml-1 hover:bg-black/20">
+                <ChevronLeft className="h-6 w-6" />
             </Button>
+            {directorImage && (
+                <Image
+                    src={directorImage.imageUrl}
+                    alt="Dr. K.C Rajheshwari"
+                    width={32}
+                    height={32}
+                    className="rounded-full"
+                />
+            )}
+            <div>
+                <p className="font-semibold text-sm">Dr. K.C Rajheshwari</p>
+                <p className="text-xs text-destructive-foreground/80">Director</p>
+            </div>
           </CardHeader>
           <CardContent className="flex-1 overflow-hidden p-0">
             <ScrollArea className="h-full" ref={scrollAreaRef}>
