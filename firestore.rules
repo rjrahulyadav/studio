@@ -11,11 +11,9 @@ service cloud.firestore {
     }
 
     // --- Rules for creating an Applicant document ---
-    // A user can create their own application.
+    // Anyone can create an application, but they cannot update or delete it.
     match /trainingModules/{trainingModuleId}/applicants/{applicantId} {
-      allow create: if request.auth != null;
-      
-      // Explicitly deny updates and deletes from clients to prevent modification.
+      allow create: if true;
       allow update, delete: if false;
     }
 

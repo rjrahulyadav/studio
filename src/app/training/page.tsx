@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,10 +24,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useAuth, useFirestore, useUser } from '@/firebase';
+import { useFirestore } from '@/firebase';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { collection } from 'firebase/firestore';
-import { initiateAnonymousSignIn } from '@/firebase/non-blocking-login';
 import { trainingModules } from '@/lib/training-modules';
 
 const formSchema = z.object({
@@ -44,15 +43,7 @@ export default function TrainingPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedModule, setSelectedModule] = useState<{id: string, title: string} | null>(null);
   
-  const auth = useAuth();
-  const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
-
-  useEffect(() => {
-    if (auth && !isUserLoading && !user) {
-      initiateAnonymousSignIn(auth);
-    }
-  }, [isUserLoading, user, auth]);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
