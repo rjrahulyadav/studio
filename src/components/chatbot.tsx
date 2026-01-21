@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect, type FormEvent } from "react";
-import Image from "next/image";
 import { MessageCircle, Send, ChevronLeft, Bot, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,7 +13,6 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { supportChatbot } from "@/ai/flows/support-chatbot";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 type Message = {
   role: "user" | "bot";
@@ -32,8 +30,6 @@ export default function Chatbot() {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-
-  const directorImage = PlaceHolderImages.find(img => img.id === 'director-profile');
 
   const toggleChat = () => setIsOpen(!isOpen);
 
@@ -95,15 +91,6 @@ export default function Chatbot() {
             <Button variant="ghost" size="icon" onClick={toggleChat} aria-label="Close chat" className="-ml-1 hover:bg-black/20">
                 <ChevronLeft className="h-6 w-6" />
             </Button>
-            {directorImage && (
-                <Image
-                    src={directorImage.imageUrl}
-                    alt="Dr. K.C Rajheshwari"
-                    width={32}
-                    height={32}
-                    className="rounded-full"
-                />
-            )}
             <div>
                 <p className="font-semibold text-sm">Dr. K.C Rajheshwari</p>
                 <p className="text-xs text-destructive-foreground/80">Director</p>
