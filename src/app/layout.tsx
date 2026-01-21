@@ -6,6 +6,7 @@ import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import Chatbot from '@/components/chatbot';
+import { FirebaseClientProvider } from '@/firebase';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -37,11 +38,13 @@ export default function RootLayout({
           spaceGrotesk.variable
         )}
       >
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
-        <Chatbot />
-        <Toaster />
+        <FirebaseClientProvider>
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+          <Chatbot />
+          <Toaster />
+        </FirebaseClientProvider>
       </body>
     </html>
   );

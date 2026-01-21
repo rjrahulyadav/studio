@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -24,55 +24,87 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { useAuth, useFirestore, useUser } from '@/firebase';
+import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { collection } from 'firebase/firestore';
+import { initiateAnonymousSignIn } from '@/firebase/non-blocking-login';
 
 const trainingModules = [
   {
+    id: 'full-stack-bootcamp',
     title: 'Full-Stack Web Development Bootcamp',
     description: 'An intensive 12-week program covering everything from front-end frameworks like React to back-end development with Node.js and databases.',
   },
   {
+    id: 'ml-ai-specialization',
     title: 'Machine Learning & AI Specialization',
     description: 'A deep dive into machine learning algorithms, neural networks, and computer vision. Work on real-world datasets and build intelligent models.',
   },
   {
+    id: 'iot-embedded-workshop',
     title: 'IoT and Embedded Systems Workshop',
     description: 'Learn to build and program IoT devices using platforms like Arduino and Raspberry Pi. Covers sensor integration, data communication, and cloud connectivity.',
   },
   {
+    id: 'advanced-mobile-dev',
     title: 'Advanced Mobile App Development',
     description: 'Master native and cross-platform mobile app development for iOS and Android, focusing on performance, UI/UX, and modern development practices.',
   },
 ];
 
 const formSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
+  firstName: z.string().min(2, { message: "First name must be at least 2 characters." }),
+  lastName: z.string().min(2, { message: "Last name must be at least 2 characters." }),
   email: z.string().email({ message: "Please enter a valid email address." }),
   module: z.string(),
+  moduleId: z.string(),
 });
 
 type FormData = z.infer<typeof formSchema>;
 
 export default function TrainingPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedModule, setSelectedModule] = useState("");
+  const [selectedModule, setSelectedModule] = useState<{id: string, title: string} | null>(null);
+  
+  const auth = useAuth();
+  const { user, isUserLoading } = useUser();
+  const firestore = useFirestore();
+
+  useEffect(() => {
+    if (auth && !isUserLoading && !user) {
+      initiateAnonymousSignIn(auth);
+    }
+  }, [isUserLoading, user, auth]);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
+      firstName: "",
+      lastName: "",
       email: "",
       module: "",
+      moduleId: "",
     },
   });
 
-  const handleRegisterClick = (moduleTitle: string) => {
-    setSelectedModule(moduleTitle);
-    form.setValue("module", moduleTitle);
+  const handleRegisterClick = (module: {id: string, title: string}) => {
+    setSelectedModule(module);
+    form.setValue("module", module.title);
+    form.setValue("moduleId", module.id);
     setIsDialogOpen(true);
   };
   
   const onSubmit = (data: FormData) => {
-    console.log("Registration data:", data);
+    if (!firestore) return;
+
+    addDocumentNonBlocking(collection(firestore, 'trainingModules', data.moduleId, 'applicants'), {
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      trainingModuleId: data.moduleId,
+      applicationDate: new Date().toISOString(),
+    });
+
     toast({
       title: "Registration Successful!",
       description: `Thank you for registering for the ${data.module} module. We will be in touch shortly.`,
@@ -115,7 +147,7 @@ export default function TrainingPage() {
                     <p className="mt-2 text-muted-foreground">{module.description}</p>
                   </div>
                   <Button 
-                    onClick={() => handleRegisterClick(module.title)} 
+                    onClick={() => handleRegisterClick(module)} 
                     className="button-glow-accent bg-accent text-accent-foreground hover:bg-accent/90 shrink-0"
                   >
                     Register Now
@@ -128,28 +160,43 @@ export default function TrainingPage() {
       </section>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[425px] bg-card/80 backdrop-blur-xl">
+        <DialogContent className="sm:max-w-md bg-card/80 backdrop-blur-xl">
           <DialogHeader>
             <DialogTitle className="font-headline text-primary">Register for Training</DialogTitle>
             <DialogDescription>
-              Complete the form to register for the "{selectedModule}" module.
+              Complete the form to register for the "{selectedModule?.title}" module.
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-4">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Full Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="John Doe" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+               <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>First Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="John" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Last Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Doe" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
               <FormField
                 control={form.control}
                 name="email"

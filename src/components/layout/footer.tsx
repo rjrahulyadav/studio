@@ -99,6 +99,9 @@ export default function Footer() {
             &copy; {new Date().getFullYear()} Dhanihya Solutions Pvt Ltd. All
             rights reserved.
           </p>
+           <p className="mt-2">
+            <Link href="/admin/login" className="hover:text-primary">Admin Login</Link>
+          </p>
         </div>
       </div>
     </footer>
