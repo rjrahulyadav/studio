@@ -1,13 +1,55 @@
+"use client";
+
 import Image from "next/image";
 import { Mail, Phone, MapPin } from "lucide-react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "@/hooks/use-toast";
 import AnimatedSection from "@/components/animated-section";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+
+const formSchema = z.object({
+  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
+  email: z.string().email({ message: "Please enter a valid email address." }),
+  subject: z.string().min(2, { message: "Subject must be at least 2 characters." }),
+  message: z.string().min(10, { message: "Message must be at least 10 characters." }),
+});
+
+type FormData = z.infer<typeof formSchema>;
+
 
 export default function ContactPage() {
     const mapImage = PlaceHolderImages.find(img => img.id === 'contact-map');
+
+    const form = useForm<FormData>({
+      resolver: zodResolver(formSchema),
+      defaultValues: {
+        name: "",
+        email: "",
+        subject: "",
+        message: "",
+      },
+    });
+
+    const onSubmit = (data: FormData) => {
+      console.log("Contact form data:", data);
+      toast({
+        title: "Message Sent!",
+        description: "Thank you for contacting us. We will get back to you shortly.",
+      });
+      form.reset();
+    };
 
   return (
     <div>
@@ -33,17 +75,63 @@ export default function ContactPage() {
               <p className="mt-4 text-muted-foreground">
                 Fill out the form below, and a member of our team will get back to you as soon as possible.
               </p>
-              <form className="mt-8 space-y-4">
-                <div className="grid sm:grid-cols-2 gap-4">
-                  <Input type="text" placeholder="Your Name" required />
-                  <Input type="email" placeholder="Your Email" required />
-                </div>
-                <Input type="text" placeholder="Subject" required />
-                <Textarea placeholder="Your Message" rows={5} required />
-                <Button type="submit" className="w-full button-glow-accent bg-accent text-accent-foreground hover:bg-accent/90">
-                  Send Message
-                </Button>
-              </form>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="mt-8 space-y-4">
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input placeholder="Your Name" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormControl>
+                            <Input placeholder="Your Email" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <FormField
+                    control={form.control}
+                    name="subject"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Input placeholder="Subject" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="message"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormControl>
+                          <Textarea placeholder="Your Message" rows={5} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <Button type="submit" className="w-full button-glow-accent bg-accent text-accent-foreground hover:bg-accent/90" disabled={form.formState.isSubmitting}>
+                    {form.formState.isSubmitting ? 'Sending...' : 'Send Message'}
+                  </Button>
+                </form>
+              </Form>
             </AnimatedSection>
 
             <AnimatedSection className="lg:delay-200">
