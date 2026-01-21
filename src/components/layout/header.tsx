@@ -26,7 +26,7 @@ export default function Header() {
       <div className="container flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <BrainCircuit className="h-7 w-7 text-primary" />
-          <span className="font-headline text-xl font-bold">DhaniHya</span>
+          <span className="font-headline text-xl font-bold">Dhanihya</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
@@ -59,7 +59,7 @@ export default function Header() {
                 <div className="flex items-center justify-between border-b pb-4">
                   <Link href="/" className="flex items-center gap-2" onClick={() => setIsOpen(false)}>
                      <BrainCircuit className="h-7 w-7 text-primary" />
-                     <span className="font-headline text-xl font-bold">DhaniHya</span>
+                     <span className="font-headline text-xl font-bold">Dhanihya</span>
                   </Link>
                    <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
                      <X className="h-6 w-6" />

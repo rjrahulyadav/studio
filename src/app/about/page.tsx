@@ -37,7 +37,7 @@ export default function AboutPage() {
         <div className="container relative z-10 mx-auto px-4 text-center">
           <AnimatedSection>
             <h1 className="font-headline text-4xl md:text-5xl font-bold tracking-tight text-glow-primary">
-              About DhaniHya Solutions
+              About Dhanihya Solutions
             </h1>
             <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
               Discover our mission, vision, and the values that drive our commitment to technological excellence.
@@ -86,7 +86,7 @@ export default function AboutPage() {
               </h2>
               <h3 className="text-xl font-semibold text-primary mt-1">Dr. K.C Rajheshwari</h3>
               <p className="mt-4 text-lg text-muted-foreground">
-                Dr. K.C Rajheshwari, the director of DhaniHya Solutions, is a visionary leader with extensive experience in both academia and the IT industry. Her passion for innovation and dedication to mentorship are the driving forces behind our company's success. She believes in nurturing talent and providing opportunities for aspiring tech professionals to thrive in a real-time environment.
+                Dr. K.C Rajheshwari, the director of Dhanihya Solutions, is a visionary leader with extensive experience in both academia and the IT industry. Her passion for innovation and dedication to mentorship are the driving forces behind our company's success. She believes in nurturing talent and providing opportunities for aspiring tech professionals to thrive in a real-time environment.
               </p>
             </AnimatedSection>
           </div>

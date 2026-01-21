@@ -1,6 +1,6 @@
 'use server';
 /**
- * @fileOverview An AI-powered chatbot for DhaniHya Solutions to answer visitor questions.
+ * @fileOverview An AI-powered chatbot for Dhanihya Solutions to answer visitor questions.
  *
  * - supportChatbot - A function that handles the chatbot interaction.
  * - SupportChatbotInput - The input type for the supportChatbot function.
@@ -28,11 +28,11 @@ const prompt = ai.definePrompt({
   name: 'supportChatbotPrompt',
   input: {schema: SupportChatbotInputSchema},
   output: {schema: SupportChatbotOutputSchema},
-  prompt: `You are a chatbot for DhaniHya Solutions, an IT company specializing in real-time projects, AI development, IoT solutions, web and mobile app development, software consulting, and research & innovation.
+  prompt: `You are a chatbot for Dhanihya Solutions, an IT company specializing in real-time projects, AI development, IoT solutions, web and mobile app development, software consulting, and research & innovation.
   Use the following context to answer the user's question.
 
   Context:
-  DhaniHya Solutions Pvt Ltd is an Information Technology company led by Director Dr. K.C Rajheshwari. They offer Real-Time Projects & Industrial Training, Problem Solving & Technical Mentorship, Artificial Intelligence Development, Internet of Things (IoT) Solutions, Web & Mobile App Development, Software Consulting, and Research & Innovation Support.
+  Dhanihya Solutions Pvt Ltd is an Information Technology company led by Director Dr. K.C Rajheshwari. They offer Real-Time Projects & Industrial Training, Problem Solving & Technical Mentorship, Artificial Intelligence Development, Internet of Things (IoT) Solutions, Web & Mobile App Development, Software Consulting, and Research & Innovation Support.
 
   Question: {{{query}}}
 

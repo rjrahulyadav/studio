@@ -153,7 +153,7 @@ export default function Home() {
               </h2>
               <p className="mt-4 text-lg text-muted-foreground">
                 Founded with a passion for technology and a vision for the
-                future, DhaniHya Solutions is dedicated to delivering excellence
+                future, Dhanihya Solutions is dedicated to delivering excellence
                 and innovation. Led by Dr. K.C Rajheshwari, our team of experts
                 is committed to solving complex problems and driving digital
                 transformation.

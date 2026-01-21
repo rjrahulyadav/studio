@@ -34,7 +34,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div className="flex flex-col">
             <h3 className="font-headline text-xl font-bold text-primary">
-              DHANIHYA SOLUTIONS Pvt Ltd
+              Dhanihya Solutions Pvt Ltd
             </h3>
             <p className="mt-2 text-muted-foreground max-w-xs">
               Empowering the future with cutting-edge solutions in AI, IoT, and software development. Innovation is our DNA.
