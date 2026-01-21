@@ -19,6 +19,9 @@ import type { Applicant } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { getAuth, signOut } from 'firebase/auth';
 
+// Hardcoded Admin User ID
+const ADMIN_UID = '9Vl6oTot93b9TH442xYCDLbMLs32';
+
 export default function AdminDashboard() {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
@@ -33,17 +36,14 @@ export default function AdminDashboard() {
       router.push('/admin/login');
       return;
     }
+    
+    // Check if the logged-in user's UID matches the hardcoded admin UID
+    if (user.uid === ADMIN_UID) {
+      setIsAllowed(true);
+    } else {
+      setIsAllowed(false);
+    }
 
-    user.getIdTokenResult().then((idTokenResult) => {
-        if (idTokenResult.claims.admin) {
-          setIsAllowed(true);
-        } else {
-          setIsAllowed(false);
-        }
-      })
-      .catch(() => {
-        setIsAllowed(false);
-      });
   }, [user, isUserLoading, router]);
 
   const applicantsQuery = useMemoFirebase(() => {

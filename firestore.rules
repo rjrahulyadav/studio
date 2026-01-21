@@ -1,7 +1,7 @@
 /**
  * @fileoverview Firestore Security Rules for the Training Application
  * @author an AI Security Architect
- * @version 1.0
+ * @version 1.1
  *
  * @description
  * This ruleset is designed for a training application where modules are publicly
@@ -13,8 +13,8 @@
  * The security model follows a principle of "public read, restricted write."
  * Training modules are public information, accessible to everyone.
  * Applying for a module requires authentication to prevent anonymous spam.
- * Viewing applicant data is a privileged operation reserved for administrators,
- * who are identified via custom authentication claims.
+ * Viewing applicant data is a privileged operation reserved for a hardcoded
+ * admin UID.
  *
  * Data Structure:
  * - /trainingModules/{trainingModuleId}: A top-level collection containing public
@@ -24,10 +24,9 @@
  *   module. This structure namespaces applications per module.
  *
  * Key Security Decisions:
- * 1. Admin Role via Custom Claims: An 'admin' role is implemented using Firebase
- *    Auth custom claims (`request.auth.token.admin == true`). This provides a
- *    secure and flexible way to manage administrative privileges for managing
- *    training modules and viewing applicant data.
+ * 1. Admin Role via Hardcoded UID: An 'admin' role is implemented by checking
+ *    against a specific user ID (`request.auth.uid`). This provides a
+ *    secure, though less flexible, way to manage administrative privileges.
  * 2. Immutable Applications: To protect applicant data integrity and because
  *    there is no user ownership field on an application, applicants cannot modify
  *    or delete their applications after submission. These actions are assumed to
@@ -46,7 +45,11 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper functions to abstract and clarify rule logic.
+    // --- Variables ---
+    // The UID of the designated administrator.
+    let ADMIN_UID = '9Vl6oTot93b9TH442xYCDLbMLs32';
+
+    // --- Helper Functions ---
 
     /**
      * Checks if a user is authenticated.
@@ -56,11 +59,11 @@ service cloud.firestore {
     }
 
     /**
-     * Checks if the authenticated user has administrative privileges.
-     * This relies on a custom claim `admin` being set to `true` on the user's auth token.
+     * Checks if the authenticated user has administrative privileges by
+     * comparing their UID against a hardcoded value.
      */
     function isAdmin() {
-      return isSignedIn() && request.auth.token.admin == true;
+      return isSignedIn() && request.auth.uid == ADMIN_UID;
     }
 
     /**
@@ -79,20 +82,10 @@ service cloud.firestore {
      *   to administrators.
      * @path
      *   /trainingModules/{trainingModuleId}
-     * @allow
-     *   (get) Anyone, authenticated or not, can read a specific training module.
-     *   (create) An admin can create a new training module document.
-     * @deny
-     *   (update) A regular authenticated user cannot update a training module.
-     *   (delete) An unauthenticated user cannot delete a training module.
-     * @principle
-     *   "Public Read with Admin-Only Writes" ensures that informational content
-     *   is widely available while maintaining strict control over its management.
      */
     match /trainingModules/{trainingModuleId} {
       allow get, list: if true;
-      allow create: if isAdmin();
-      allow update, delete: if isAdmin() && resource != null;
+      allow create, update, delete: if isAdmin();
     }
 
     /**
@@ -103,22 +96,11 @@ service cloud.firestore {
      *   deleted by clients after submission.
      * @path
      *   /trainingModules/{trainingModuleId}/applicants/{applicantId}
-     * @allow
-     *   (create) Any authenticated user can create a new application for a module.
-     *   (get) An admin can read a specific applicant's submission.
-     * @deny
-     *   (update) A user cannot update an application after submitting it.
-     *   (list) A regular authenticated user cannot list all applicants for a module.
-     * @principle
-     *   "Authenticated Create, Admin Read" protects sensitive applicant information
-     *   while allowing an open application process for signed-in users. Forbidding
-     *   client-side updates/deletes ensures data integrity post-submission.
      */
     match /trainingModules/{trainingModuleId}/applicants/{applicantId} {
       allow get, list: if isAdmin();
       allow create: if isSignedIn() && incomingDataHasValidTrainingModuleId(trainingModuleId);
-      allow update: if false;
-      allow delete: if false;
+      allow update, delete: if false;
     }
   }
 }
