@@ -1,8 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, type FormEvent } from "react";
-import Image from "next/image";
-import { MessageCircle, Send, ChevronLeft, Bot, User } from "lucide-react";
+import { MessageCircle, Send, ChevronLeft, Bot, User, Mic } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,12 +13,20 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { supportChatbot } from "@/ai/flows/support-chatbot";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { useToast } from "@/hooks/use-toast";
 
 type Message = {
   role: "user" | "bot";
   content: string;
 };
+
+// For cross-browser compatibility
+declare global {
+  interface Window {
+    SpeechRecognition: any;
+    webkitSpeechRecognition: any;
+  }
+}
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -31,9 +38,11 @@ export default function Chatbot() {
   ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [speechSupport, setSpeechSupport] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  
-  const directorImage = PlaceHolderImages.find(img => img.id === 'director-profile');
+  const recognitionRef = useRef<any>(null);
+  const { toast } = useToast();
 
   const toggleChat = () => setIsOpen(!isOpen);
 
@@ -47,18 +56,74 @@ export default function Chatbot() {
       }, 100);
     }
   }, [messages, isLoading]);
+  
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      setSpeechSupport(true);
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
 
-  const handleSubmit = async (e: FormEvent) => {
+      recognition.onresult = (event: any) => {
+        const transcript = event.results[0][0].transcript;
+        setInput(transcript);
+        setIsListening(false);
+        // Automatically submit after voice input
+        handleSubmit(new (window.Event as any)('submit'), transcript);
+      };
+
+      recognition.onerror = (event: any) => {
+        console.error("Speech recognition error", event.error);
+        toast({
+          variant: "destructive",
+          title: "Voice Error",
+          description: "Something went wrong with voice recognition.",
+        });
+        setIsListening(false);
+      };
+      
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognitionRef.current = recognition;
+    } else {
+      setSpeechSupport(false);
+    }
+  }, [toast]);
+
+  const handleListen = () => {
+    if (!speechSupport) {
+        toast({
+            variant: "destructive",
+            title: "Browser Not Supported",
+            description: "Your browser does not support voice commands.",
+        });
+        return;
+    }
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      recognitionRef.current.start();
+      setIsListening(true);
+    }
+  };
+
+  const handleSubmit = async (e: FormEvent | Event, voiceInput?: string) => {
     e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    const currentInput = voiceInput || input;
+    if (!currentInput.trim() || isLoading) return;
 
-    const userMessage: Message = { role: "user", content: input };
+    const userMessage: Message = { role: "user", content: currentInput };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
     setIsLoading(true);
 
     try {
-      const response = await supportChatbot({ query: input });
+      const response = await supportChatbot({ query: currentInput });
       const botMessage: Message = { role: "bot", content: response.answer };
       setMessages((prev) => [...prev, botMessage]);
     } catch (error: any) {
@@ -91,28 +156,17 @@ export default function Chatbot() {
 
       <div className={cn("fixed bottom-6 right-6 z-50 w-full max-w-sm transition-all duration-300", isOpen ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none")}>
         <Card className="flex flex-col h-[70vh] max-h-[700px] bg-card/80 backdrop-blur-xl border-border/60 shadow-2xl overflow-hidden">
-          <CardHeader className="flex flex-row items-center justify-between bg-secondary p-4 text-secondary-foreground">
+          <CardHeader className="flex flex-row items-center justify-between bg-destructive p-4 text-destructive-foreground">
             <div className="flex items-center gap-3">
-              {directorImage ? (
-                <Image
-                  src={directorImage.imageUrl}
-                  alt={directorImage.description}
-                  data-ai-hint={directorImage.imageHint}
-                  width={40}
-                  height={40}
-                  className="rounded-full"
-                />
-              ) : (
-                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
-                    <Bot className="h-6 w-6 text-primary" />
-                </div>
-              )}
+              <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
+                  <Bot className="h-6 w-6 text-destructive-foreground" />
+              </div>
               <div>
                 <p className="font-semibold">Dr. K.C Rajheshwari</p>
-                <p className="text-xs text-muted-foreground">AI Assistant</p>
+                <p className="text-xs text-white/80">Director</p>
               </div>
             </div>
-            <Button variant="ghost" size="icon" onClick={toggleChat} aria-label="Close chat">
+            <Button variant="ghost" size="icon" onClick={toggleChat} aria-label="Close chat" className="hover:bg-white/20">
                 <ChevronLeft className="h-6 w-6" />
             </Button>
           </CardHeader>
@@ -169,11 +223,14 @@ export default function Chatbot() {
               <Input
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask a question..."
+                placeholder={isListening ? "Listening..." : "Ask a question..."}
                 disabled={isLoading}
                 className="bg-secondary border-0 focus-visible:ring-1 focus-visible:ring-primary"
               />
-              <Button type="submit" size="icon" disabled={isLoading} className="bg-accent hover:bg-accent/90 shrink-0">
+              <Button type="button" size="icon" onClick={handleListen} disabled={!speechSupport || isLoading} className={cn("shrink-0", isListening ? "bg-destructive hover:bg-destructive/90" : "bg-accent hover:bg-accent/90")}>
+                <Mic className="h-5 w-5 text-accent-foreground" />
+              </Button>
+              <Button type="submit" size="icon" disabled={isLoading || !input.trim()} className="bg-accent hover:bg-accent/90 shrink-0">
                 <Send className="h-5 w-5 text-accent-foreground" />
               </Button>
             </form>
