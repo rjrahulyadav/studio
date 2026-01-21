@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/card';
 import AnimatedSection from '@/components/animated-section';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { Badge } from '@/components/ui/badge';
 
 const services = [
   {
@@ -71,31 +72,30 @@ export default function Home() {
 
   return (
     <div className="flex flex-col">
-      <section className="relative h-[90svh] w-full flex items-center justify-center animated-gradient">
-        <div className="absolute inset-0 bg-background/60" />
-        <div className="relative z-10 text-center px-4">
+      <section className="relative h-[80vh] min-h-[600px] w-full flex items-center justify-center bg-background">
+        <div className="absolute inset-0 w-full h-full bg-grid-white/[0.02] bg-[length:3rem_3rem] [mask-image:radial-gradient(ellipse_at_center,white_20%,transparent_70%)]"></div>
+        <div className="relative z-10 text-center px-4 flex flex-col items-center">
           <AnimatedSection>
-            <h1 className="font-headline text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter text-glow-primary">
-              Engineering the Future.
+            <div className="mb-6">
+                <Badge variant="outline" className="border-accent/50 text-accent bg-accent/10 py-1.5 px-4 text-sm font-medium glow-border-accent">
+                    INNOVATING THE FUTURE
+                </Badge>
+            </div>
+          </AnimatedSection>
+          <AnimatedSection className="delay-100">
+            <h1 className="font-headline text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter text-foreground">
+              DHANIHYA
             </h1>
           </AnimatedSection>
           <AnimatedSection className="delay-200">
-            <p className="mt-4 max-w-2xl mx-auto text-lg md:text-xl text-muted-foreground">
-              DhaniHya Solutions: Your partner in navigating the complexities of
-              technology with innovative AI, IoT, and custom software solutions.
-            </p>
+            <h1 className="font-headline text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter text-gradient">
+              SOLUTIONS
+            </h1>
           </AnimatedSection>
-          <AnimatedSection className="delay-400">
-            <div className="mt-8 flex justify-center gap-4">
-              <Button asChild size="lg" className="button-glow-accent bg-accent text-accent-foreground hover:bg-accent/90">
-                <Link href="/services">
-                  Our Services <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link href="/contact">Contact Us</Link>
-              </Button>
-            </div>
+          <AnimatedSection className="delay-300">
+            <p className="mt-6 max-w-3xl mx-auto text-lg text-muted-foreground">
+              We engineer cutting-edge digital experiences using AI, IoT, and Next-Gen Web Technologies. Your vision, our innovation.
+            </p>
           </AnimatedSection>
         </div>
       </section>
