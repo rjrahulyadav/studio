@@ -18,6 +18,7 @@ import AnimatedSection from '@/components/animated-section';
 import type { Applicant } from '@/lib/types';
 import { Button } from '@/components/ui/button';
 import { getAuth, signOut } from 'firebase/auth';
+import { trainingModules } from '@/lib/training-modules';
 
 // Hardcoded Admin User ID
 const ADMIN_UID = '9Vl6oTot93b9TH442xYCDLbMLs32';
@@ -27,6 +28,13 @@ export default function AdminDashboard() {
   const router = useRouter();
   const firestore = useFirestore();
   const [isAllowed, setIsAllowed] = useState<boolean | null>(null);
+
+  const moduleTitles = useMemo(() => {
+    return trainingModules.reduce((acc, module) => {
+      acc[module.id] = module.title;
+      return acc;
+    }, {} as Record<string, string>);
+  }, []);
 
   useEffect(() => {
     if (isUserLoading) {
@@ -109,7 +117,7 @@ export default function AdminDashboard() {
                       <TableRow key={applicant.id}>
                         <TableCell>{applicant.firstName} {applicant.lastName}</TableCell>
                         <TableCell>{applicant.email}</TableCell>
-                        <TableCell>{applicant.trainingModuleId}</TableCell>
+                        <TableCell>{moduleTitles[applicant.trainingModuleId] || applicant.trainingModuleId}</TableCell>
                         <TableCell>{new Date(applicant.applicationDate).toLocaleDateString()}</TableCell>
                       </TableRow>
                     ))

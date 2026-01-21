@@ -96,44 +96,17 @@
     ]
   },
   "firestore": {
-    "structure": [
-      {
-        "path": "/trainingModules/{trainingModuleId}",
-        "definition": {
-          "entityName": "TrainingModule",
-          "schema": {
-            "$ref": "#/backend/entities/TrainingModule"
-          },
-          "description": "Stores training module information. No authorization is required to read training module data.",
-          "params": [
-            {
-              "name": "trainingModuleId",
-              "description": "The unique identifier for the training module."
-            }
-          ]
-        }
+    "/trainingModules/{trainingModuleId}": {
+      "schema": {
+        "$ref": "#/backend/entities/TrainingModule"
       },
-      {
-        "path": "/trainingModules/{trainingModuleId}/applicants/{applicantId}",
-        "definition": {
-          "entityName": "Applicant",
-          "schema": {
-            "$ref": "#/backend/entities/Applicant"
-          },
-          "description": "Stores applicant information for a specific training module. Includes denormalized 'trainingModuleId' for authorization independence.",
-          "params": [
-            {
-              "name": "trainingModuleId",
-              "description": "The unique identifier for the training module."
-            },
-            {
-              "name": "applicantId",
-              "description": "The unique identifier for the applicant."
-            }
-          ]
-        }
-      }
-    ],
-    "reasoning": "The data structure prioritizes authorization independence and QAPs.  Training modules are stored in a top-level collection `/trainingModules`. Applicants are stored in a subcollection `/trainingModules/{trainingModuleId}/applicants/{applicantId}`. This structure allows for straightforward security rules based on the existence of a document. Access to training modules is public, but the creation of applicant documents is restricted to authenticated users. No data is shared across collections requiring authorization checks. The `trainingModuleId` is duplicated into the `Applicant` entity. This design eliminates the need for `get()` calls in security rules, enabling atomic operations (transactions/batches) and easier debugging. Because Applicants are stored in a subcollection of the `trainingModules` collection, listing all applicants is namespaced, enabling secure list operations. Admins would need a separate UI to view all applicants across all training modules, but this is a simple aggregation of data that does not impact the security rules."
+      "description": "Stores training module information. No authorization is required to read training module data."
+    },
+    "/trainingModules/{trainingModuleId}/applicants/{applicantId}": {
+      "schema": {
+        "$ref": "#/backend/entities/Applicant"
+      },
+      "description": "Stores applicant information for a specific training module. Includes denormalized 'trainingModuleId' for authorization independence."
+    }
   }
 }
