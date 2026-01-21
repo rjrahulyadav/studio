@@ -1,7 +1,7 @@
 /**
  * @fileoverview Firestore Security Rules for the Training Application
  * @author an AI Security Architect
- * @version 1.2
+ * @version 1.3
  *
  * @description
  * This ruleset is designed for a training application where modules are publicly
@@ -87,8 +87,8 @@ service cloud.firestore {
      *   /trainingModules/{trainingModuleId}
      */
     match /trainingModules/{trainingModuleId} {
-      allow get, list: if true;
-      allow create, update, delete: if isAdmin();
+      allow read: if true;
+      allow write: if isAdmin();
 
       /**
        * @description
@@ -115,7 +115,7 @@ service cloud.firestore {
      *   /{path=**}/applicants/{applicantId}
      */
     match /{path=**}/applicants/{applicantId} {
-       allow get, list: if isAdmin();
+       allow read: if isAdmin();
        // This rule only grants read access. Writes must be defined on more specific paths
        // to prevent any authenticated admin from creating an applicant document anywhere.
     }
