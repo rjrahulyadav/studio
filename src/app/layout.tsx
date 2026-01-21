@@ -18,9 +18,9 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: 'DhaniHya Solutions Pvt Ltd | Innovative IT Solutions',
+  title: 'Dhanihya Solutions Pvt Ltd | Innovative IT Solutions',
   description:
-    'DhaniHya Solutions offers cutting-edge IT services including AI development, IoT solutions, web and mobile app development, and real-time project training.',
+    'Dhanihya Solutions offers cutting-edge IT services including AI development, IoT solutions, web and mobile app development, and real-time project training.',
 };
 
 export default function RootLayout({

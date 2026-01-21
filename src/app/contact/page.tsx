@@ -58,8 +58,8 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold">Email</h3>
-                    <a href="mailto:contact@dhaniyasolutions.com" className="text-muted-foreground hover:text-primary">
-                      contact@dhaniyasolutions.com
+                    <a href="mailto:director@dhanihyasolutions.com" className="text-muted-foreground hover:text-primary">
+                      director@dhanihyasolutions.com
                     </a>
                   </div>
                 </div>
@@ -69,7 +69,9 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold">Phone</h3>
-                    <p className="text-muted-foreground">(+91) 123-456-7890</p>
+                    <a href="tel:+919600516927" className="text-muted-foreground hover:text-primary">
+                      +91 9600516927
+                    </a>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
@@ -78,7 +80,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold">Address</h3>
-                    <p className="text-muted-foreground">123 Tech Park, Innovation Hub, Bangalore, India</p>
+                    <p className="text-muted-foreground">Junction Main Rd, Salem, Tamil Nadu 636005</p>
                   </div>
                 </div>
               </div>

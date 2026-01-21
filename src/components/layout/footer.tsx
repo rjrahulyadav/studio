@@ -34,7 +34,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div className="flex flex-col">
             <h3 className="font-headline text-xl font-bold text-primary">
-              DHANIHYA
+              DHANIHYA SOLUTIONS Pvt Ltd
             </h3>
             <p className="mt-2 text-muted-foreground max-w-xs">
               Empowering the future with cutting-edge solutions in AI, IoT, and software development. Innovation is our DNA.
@@ -96,7 +96,7 @@ export default function Footer() {
         </div>
         <div className="mt-12 pt-8 border-t border-border/50 text-center text-sm text-muted-foreground">
           <p>
-            &copy; {new Date().getFullYear()} DhaniHya Solutions Pvt Ltd. All
+            &copy; {new Date().getFullYear()} Dhanihya Solutions Pvt Ltd. All
             rights reserved.
           </p>
         </div>

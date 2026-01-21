@@ -89,7 +89,7 @@ export default function Home() {
           </AnimatedSection>
           <AnimatedSection className="delay-200">
             <h1 className="font-headline text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tighter text-gradient">
-              SOLUTIONS
+              SOLUTIONS Pvt Ltd
             </h1>
           </AnimatedSection>
           <AnimatedSection className="delay-300">
@@ -149,7 +149,7 @@ export default function Home() {
             </AnimatedSection>
             <AnimatedSection className="lg:delay-200">
               <h2 className="font-headline text-3xl md:text-4xl font-bold tracking-tight">
-                About DhaniHya Solutions
+                About Dhanihya Solutions Pvt Ltd
               </h2>
               <p className="mt-4 text-lg text-muted-foreground">
                 Founded with a passion for technology and a vision for the
