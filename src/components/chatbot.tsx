@@ -159,7 +159,7 @@ export default function Chatbot() {
           <CardHeader className="flex flex-row items-center justify-between bg-destructive p-4 text-destructive-foreground">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                  <Bot className="h-6 w-6 text-destructive-foreground" />
+                  <User className="h-6 w-6 text-destructive-foreground" />
               </div>
               <div>
                 <p className="font-semibold">Dr. K.C Rajheshwari</p>
