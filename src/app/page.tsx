@@ -27,7 +27,7 @@ const services = [
     icon: <Cpu className="h-10 w-10 text-primary" />,
     title: 'Artificial Intelligence',
     description:
-      'Developing intelligent systems to automate processes and derive insights from data.',
+      'Developing intelligent systems to automate processes and derive insights from data and several sources.',
   },
   {
     icon: <Router className="h-10 w-10 text-primary" />,
